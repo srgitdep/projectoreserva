@@ -1,0 +1,5 @@
+# core/whatsapp_config.py
+
+ZAPI_INSTANCE_ID = "3F50732A8A50217E39A50E47AC50613B"
+ZAPI_TOKEN = "2522FD54C3FE3B6C41875CE7"
+ZAPI_URL = f"https://api.z-api.io/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-text"

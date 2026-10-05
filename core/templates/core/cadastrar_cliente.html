@@ -1,0 +1,207 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Cadastrar Cliente{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1><i class="fas fa-user-plus"></i> Cadastrar Cliente</h1>
+
+    <form method="post" class="form-cadastro">
+        {% csrf_token %}
+
+        <!-- ===== CAMPOS OBRIGATÓRIOS ===== -->
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="nome"><i class="fas fa-user"></i> Nome *</label>
+                    <input type="text" name="nome" id="nome" required placeholder="Nome completo">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="telefone"><i class="fas fa-phone"></i> Telefone *</label>
+                    <input type="text" name="telefone" id="telefone" required placeholder="Ex: 258841234567">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="bi"><i class="fas fa-id-card"></i> BI</label>
+                    <input type="text" name="bi" id="bi" placeholder="Número do BI">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="pacote"><i class="fas fa-tag"></i> Pacote *</label>
+                    <select name="pacote" id="pacote" required>
+                        {% for value, label in pacote_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="produto"><i class="fas fa-box"></i> Produto *</label>
+                    <input type="text" name="produto_escolhido" id="produto" required placeholder="Ex: Micro-ondas M1">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="valor"><i class="fas fa-money-bill"></i> Valor do Produto *</label>
+                    <input type="number" step="0.01" name="valor_produto" id="valor" required placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="data_entrega"><i class="fas fa-calendar-alt"></i> Data Previsão Entrega</label>
+                    <input type="date" name="data_previsao_entrega" id="data_entrega">
+                </div>
+            </div>
+            <div class="col">
+                <!-- Campo Agente (só para admin) -->
+                {% if not is_agente and user.is_superuser %}
+                <div class="form-group">
+                    <label for="agente"><i class="fas fa-user-tie"></i> Agente Responsável</label>
+                    <select name="agente" id="agente">
+                        <option value="">-- Selecione --</option>
+                        {% for agente in agentes %}
+                            <option value="{{ agente.id }}">{{ agente.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% elif is_agente %}
+                <div class="form-group disabled-field">
+                    <label><i class="fas fa-user-tie"></i> Agente Responsável</label>
+                    <input type="text" value="{{ agente_logado.nome }}" disabled>
+                    <small>O cliente será associado a você automaticamente.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- ===== CAMPOS OPCIONAIS ===== -->
+        <h3><i class="fas fa-address-card"></i> Informações Adicionais</h3>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="tipo_negocio"><i class="fas fa-store"></i> Tipo de Negócio</label>
+                    <input type="text" name="tipo_negocio" id="tipo_negocio" placeholder="Ex: Comércio, Agricultura...">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="data_nasc"><i class="fas fa-calendar-alt"></i> Data Nascimento</label>
+                    <input type="date" name="data_nascimento" id="data_nasc">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="estado_civil"><i class="fas fa-heart"></i> Estado Civil</label>
+                    <select name="estado_civil" id="estado_civil">
+                        <option value="">-- Selecione --</option>
+                        <option value="SOLTEIRO">Solteiro(a)</option>
+                        <option value="CASADO">Casado(a)</option>
+                        <option value="UNIAO_ESTAVEL">União Estável</option>
+                        <option value="DIVORCIADO">Divorciado(a)</option>
+                        <option value="VIUVO">Viúvo(a)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="filhos"><i class="fas fa-child"></i> Número de Filhos</label>
+                    <input type="number" name="numero_filhos" id="filhos" value="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="profissao"><i class="fas fa-briefcase"></i> Profissão</label>
+                    <input type="text" name="profissao" id="profissao" placeholder="Ex: Comerciante, Professor...">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="endereco"><i class="fas fa-map-marker-alt"></i> Endereço</label>
+                    <textarea name="endereco" id="endereco" rows="2" placeholder="Endereço completo"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col full-width">
+                <div class="form-group">
+                    <label for="observacoes"><i class="fas fa-comment"></i> Observações</label>
+                    <textarea name="observacoes" id="observacoes" rows="3" placeholder="Observações gerais sobre o cliente"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Cadastrar Cliente
+            </button>
+            <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* ===== ESTILOS DO FORMULÁRIO (já existentes) ===== */
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.08);
+    }
+    h1 { color: #003087; margin-bottom: 25px; font-size: 28px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px; }
+    h1 i { margin-right: 10px; }
+    h3 { color: #003087; margin: 25px 0 15px; font-size: 18px; font-weight: 600; }
+    h3 i { margin-right: 8px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 5px; }
+    .col { display: flex; flex-direction: column; }
+    .col.full-width { grid-column: 1 / -1; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 5px; font-size: 14px; }
+    .form-group label i { color: #003087; width: 18px; margin-right: 4px; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%; padding: 10px 12px; border: 1.5px solid #dee2e6; border-radius: 8px;
+        font-size: 14px; transition: 0.3s; background: #fcfcfc;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: #003087; outline: none; box-shadow: 0 0 0 3px rgba(0,48,135,0.1); background: white;
+    }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .form-group small { display: block; margin-top: 4px; color: #6c757d; font-size: 12px; }
+    .disabled-field input[disabled] { background: #e9ecef !important; color: #495057; cursor: not-allowed; border-color: #dee2e6; }
+    hr { border: 0; border-top: 2px solid #e9ecef; margin: 25px 0; }
+    .form-actions { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; align-items: center; }
+    .btn { padding: 12px 28px; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-success:hover { background: #218838; transform: scale(1.02); }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover { background: #5a6268; transform: scale(1.02); }
+    @media (max-width: 768px) { .row { grid-template-columns: 1fr; gap: 0; } .col.full-width { grid-column: 1; } .container { padding: 20px; } .form-actions { flex-direction: column; } .form-actions .btn { width: 100%; justify-content: center; } }
+</style>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Agente - SRG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button:hover { background: #218838; }
+        .messages { color: green; margin-bottom: 15px; }
+        .error { color: red; }
+        .menu a { margin-right: 15px; text-decoration: none; color: #003087; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+        <a href="{% url 'lista_agentes' %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    </div>
+    <h1><i class="fas fa-user-plus"></i> Cadastrar Agente</h1>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <label for="nome">Nome *</label>
+        <input type="text" name="nome" required>
+
+        <label for="telefone">Telefone *</label>
+        <input type="text" name="telefone" required>
+
+        <label for="meta_diaria">Meta Diária (MZN)</label>
+        <input type="number" name="meta_diaria" step="0.01" value="0">
+
+        <button type="submit"><i class="fas fa-save"></i> Salvar</button>
+    </form>
+</div>
+</body>
+</html>

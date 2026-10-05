@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Lançar Pagamento - SRG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; }
+        button[type="submit"] { background: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button[type="submit"]:hover { background: #218838; }
+        .messages { margin-bottom: 15px; }
+        .success { color: green; }
+        .error { color: red; }
+
+        /* ===== MENU ===== */
+        .menu {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu a {
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .menu-admin a { color: #003087; }
+        .menu-admin a:hover { background: #e6f0fa; }
+
+        .menu-agente .btn-agente {
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            color: white;
+        }
+        .menu-agente .btn-clientes { background: #3498db; }
+        .menu-agente .btn-clientes:hover { background: #2980b9; }
+        .menu-agente .btn-novo { background: #28a745; }
+        .menu-agente .btn-novo:hover { background: #218838; }
+        .menu-agente .btn-pagamento { background: #e67e22; }
+        .menu-agente .btn-pagamento:hover { background: #d35400; }
+
+        .user-info {
+            margin-left: auto;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-sair {
+            color: #ff6b6b;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            background: rgba(255,107,107,0.1);
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-sair:hover {
+            background: rgba(255,107,107,0.3);
+            color: #ff2e2e;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- MENU DINÂMICO COM LOGOUT POST -->
+    <div class="menu {% if user.is_superuser %}menu-admin{% else %}menu-agente{% endif %}">
+        {% if user.is_superuser %}
+            <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+            <a href="{% url 'lista_agentes' %}"><i class="fas fa-users"></i> Agentes</a>
+            <a href="{% url 'lista_clientes' %}"><i class="fas fa-user-friends"></i> Clientes</a>
+            <a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="{% url 'lancar_pagamento' %}"><i class="fas fa-hand-holding-usd"></i> Lançar Pagamento</a>
+        {% else %}
+            <a href="{% url 'lista_clientes' %}" class="btn-agente btn-clientes"><i class="fas fa-user-friends"></i> Clientes</a>
+            <a href="{% url 'cadastrar_cliente' %}" class="btn-agente btn-novo"><i class="fas fa-plus"></i> Novo Cliente</a>
+            <a href="{% url 'lancar_pagamento' %}" class="btn-agente btn-pagamento"><i class="fas fa-hand-holding-usd"></i> Lançar Pagamento</a>
+        {% endif %}
+
+        <!-- NOME + BOTÃO SAIR (POST) -->
+        <div class="user-info">
+            <span><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sair"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </form>
+        </div>
+    </div>
+
+    <h1><i class="fas fa-hand-holding-usd"></i> Lançar Pagamento</h1>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="agente">Agente *</label>
+        <select name="agente" required>
+            <option value="">Selecione o agente</option>
+            {% for agente in agentes %}
+            <option value="{{ agente.id }}">{{ agente.nome }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="cliente">Cliente *</label>
+        <select name="cliente" required>
+            <option value="">Selecione o cliente</option>
+            {% for cliente in clientes %}
+            <option value="{{ cliente.id }}">{{ cliente.nome }} (Saldo: {{ cliente.saldo_devedor|floatformat:2 }} MZN)</option>
+            {% endfor %}
+        </select>
+
+        <label for="valor">Valor (MZN) *</label>
+        <input type="number" name="valor" step="0.01" required>
+
+        <label for="metodo">Método de Pagamento *</label>
+        <select name="metodo" required>
+            <option value="cash">Dinheiro</option>
+            <option value="bancaria">Transferência Bancária</option>
+            <option value="emola">Emola</option>
+            <option value="mpesa">M-Pesa</option>
+            <option value="cheque">Cheque</option>
+            <option value="outro">Outro</option>
+        </select>
+
+        <label for="referencia">Referência / Nº Comprovativo</label>
+        <input type="text" name="referencia" placeholder="Ex: TRF20250618">
+
+        <label for="observacao">Observação</label>
+        <textarea name="observacao" rows="3"></textarea>
+
+        <button type="submit"><i class="fas fa-check"></i> Confirmar Pagamento</button>
+    </form>
+</div>
+</body>
+</html>

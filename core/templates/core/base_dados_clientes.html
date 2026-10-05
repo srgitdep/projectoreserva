@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Base de Dados - Clientes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #003087; color: white; position: sticky; top: 0; }
+        .menu a { margin-right: 15px; text-decoration: none; color: #003087; font-weight: bold; }
+        .scroll { max-height: 600px; overflow-y: auto; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; color: white; }
+        .bg-success { background: #28a745; }
+        .bg-warning { background: #ffc107; color: #333; }
+        .bg-info { background: #17a2b8; }
+        .bg-secondary { background: #6c757d; }
+        .filtro { margin-bottom: 15px; }
+        .filtro input { padding: 8px; border: 1px solid #ddd; border-radius: 5px; width: 300px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+        <a href="{% url 'lista_clientes' %}"><i class="fas fa-user-friends"></i> Clientes</a>
+        <a href="{% url 'base_dados_clientes' %}" style="color: #dc3545;"><i class="fas fa-database"></i> Base de Dados</a>
+        <a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a>
+    </div>
+    <h1><i class="fas fa-database"></i> Base de Dados do Cliente</h1>
+    <p style="color: #666; margin-bottom: 15px;">Informações detalhadas para análise de perfil e oportunidades de venda.</p>
+
+    <div class="filtro">
+        <input type="text" id="filtro" placeholder="Pesquisar por nome, telefone, produto..." onkeyup="filtrarTabela()">
+    </div>
+
+    <div class="scroll">
+        <table id="tabelaClientes">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>BI</th>
+                    <th>Tipo de Negócio</th>
+                    <th>Data Nasc.</th>
+                    <th>Estado Civil</th>
+                    <th>Filhos</th>
+                    <th>Profissão</th>
+                    <th>Endereço</th>
+                    <th>Pacote</th>
+                    <th>Produto</th>
+                    <th>Valor</th>
+                    <th>Pago</th>
+                    <th>Saldo</th>
+                    <th>Status</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td><strong>{{ cliente.nome }}</strong></td>
+                    <td>{{ cliente.telefone }}</td>
+                    <td>{{ cliente.bi|default:"-" }}</td>
+                    <td>{{ cliente.tipo_negocio|default:"-" }}</td>
+                    <td>{{ cliente.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
+                    <td>{{ cliente.get_estado_civil_display|default:"-" }}</td>
+                    <td>{{ cliente.numero_filhos }}</td>
+                    <td>{{ cliente.profissao|default:"-" }}</td>
+                    <td>{{ cliente.endereco|truncatechars:30|default:"-" }}</td>
+                    <td>{{ cliente.get_pacote_display }}</td>
+                    <td>{{ cliente.produto_escolhido }}</td>
+                    <td>{{ cliente.valor_produto|floatformat:2 }}</td>
+                    <td>{{ cliente.total_pago|floatformat:2 }}</td>
+                    <td>{{ cliente.saldo_devedor|floatformat:2 }}</td>
+                    <td>
+                        {% if cliente.status == 'ativo' %}
+                            <span class="badge bg-info">Ativo</span>
+                        {% else %}
+                            <span class="badge bg-success">Quitado</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ cliente.observacoes|truncatechars:20|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="16">Nenhum cliente cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function filtrarTabela() {
+        const input = document.getElementById('filtro');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('tabelaClientes');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let found = false;
+            for (let j = 0; j < cells.length; j++) {
+                const text = cells[j].textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    found = true;
+                    break;
+                }
+            }
+            rows[i].style.display = found ? '' : 'none';
+        }
+    }
+</script>
+</body>
+</html>

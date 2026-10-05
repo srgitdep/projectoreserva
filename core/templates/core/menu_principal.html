@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRG - Gestão de Vendas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #003087 0%, #667eea 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        .header {
+            background: #003087;
+            color: white;
+            padding: 30px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 28px;
+        }
+        .header h1 small {
+            font-size: 14px;
+            font-weight: 300;
+            opacity: 0.8;
+            display: block;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header .user-info .username {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+        .btn-sair {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255,107,107,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-sair:hover {
+            background: rgba(255,107,107,0.4);
+            color: #ff2e2e;
+            border-color: #ff2e2e;
+            transform: scale(1.05);
+        }
+        .content {
+            padding: 50px 30px;
+            text-align: center;
+        }
+        .content h2 {
+            color: #003087;
+            margin-bottom: 10px;
+        }
+        .content p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 30px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #003087;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            background: #e6f0fa;
+        }
+        .card .icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .card .label {
+            display: block;
+        }
+        .footer {
+            background: #f1f1f1;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .header .user-info {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER COM BOTÃO SAIR -->
+        <div class="header">
+            <h1>
+                🚀 SRG Logística e Serviços
+                <small>Sistema de Gestão de Vendas e Pagamentos</small>
+            </h1>
+            <div class="user-info">
+                <span class="username"><i class="fas fa-user-cog"></i> {{ user.username }}</span>
+                <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sair">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>Menu Principal</h2>
+            <p>Selecione uma das opções abaixo para gerir o sistema.</p>
+
+            <div class="grid">
+                <a href="{% url 'dashboard' %}" class="card">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="{% url 'lista_agentes' %}" class="card">
+                    <span class="icon">👤</span>
+                    <span class="label">Agentes</span>
+                </a>
+                <a href="{% url 'lista_clientes' %}" class="card">
+                    <span class="icon">👥</span>
+                    <span class="label">Clientes</span>
+                </a>
+                <a href="{% url 'base_dados_clientes' %}" class="card">
+                    <span class="icon">📊</span>
+                    <span class="label">Base de Dados</span>
+                </a>
+                <a href="{% url 'lancar_pagamento' %}" class="card">
+                    <span class="icon">💰</span>
+                    <span class="label">Lançar Pagamento</span>
+                </a>
+                <a href="{% url 'cadastrar_agente' %}" class="card">
+                    <span class="icon">➕</span>
+                    <span class="label">Novo Agente</span>
+                </a>
+                <a href="{% url 'cadastrar_cliente' %}" class="card">
+                    <span class="icon">➕</span>
+                    <span class="label">Novo Cliente</span>
+                </a>
+                <a href="{% url 'admin_financeira' %}" class="card">
+                    <span class="icon">💼</span>
+                    <span class="label">SRG Administração Financeira</span>
+                </a>
+                <a href="{% url 'china_mall_dashboard' %}" class="card">
+                    <span class="icon">🏬</span>
+                    <span class="label">China Mall</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; 2025 SRG Logística e Serviços - Todos os direitos reservados.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Extrato - {{ cliente.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        .info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .info p { margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #003087; color: white; }
+        .total { font-weight: bold; font-size: 16px; margin-top: 15px; }
+        .menu a { margin-right: 15px; text-decoration: none; color: #003087; font-weight: bold; }
+        .btn-imprimir { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-imprimir:hover { background: #218838; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+        <a href="{% url 'lista_clientes' %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    </div>
+    <h1><i class="fas fa-file-invoice"></i> Extrato do Cliente: {{ cliente.nome }}</h1>
+    <div class="info">
+        <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+        <p><strong>Pacote:</strong> {{ cliente.get_pacote_display }}</p>
+        <p><strong>Produto:</strong> {{ cliente.produto_escolhido }}</p>
+        <p><strong>Valor Total:</strong> {{ cliente.valor_produto|floatformat:2 }} MZN</p>
+        <p><strong>Total Pago:</strong> {{ total_pago|floatformat:2 }} MZN</p>
+        <p><strong>Saldo Devedor:</strong> {{ saldo|floatformat:2 }} MZN</p>
+        <p><strong>Status:</strong> {% if cliente.status == 'ativo' %}Ativo{% else %}Quitado{% endif %}</p>
+    </div>
+
+    <h3>Histórico de Pagamentos</h3>
+    <table>
+        <thead>
+            <tr><th>Data</th><th>Valor</th><th>Agente</th><th>Método</th><th>Referência</th></tr>
+        </thead>
+        <tbody>
+            {% for pag in pagamentos %}
+            <tr>
+                <td>{{ pag.data_pagamento|date:"d/m/Y" }}</td>
+                <td>{{ pag.valor|floatformat:2 }}</td>
+                <td>{{ pag.agente.nome }}</td>
+                <td>{{ pag.get_metodo_display }}</td>
+                <td>{{ pag.referencia|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Nenhum pagamento registrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="total">
+        <p><strong>Total de Pagamentos:</strong> {{ total_pago|floatformat:2 }} MZN</p>
+    </div>
+    <button class="btn-imprimir" onclick="window.print()"><i class="fas fa-print"></i> Imprimir / Salvar PDF</button>
+</div>
+</body>
+</html>

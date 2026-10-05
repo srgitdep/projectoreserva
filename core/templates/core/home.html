@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRG - Gestão de Vendas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #003087 0%, #667eea 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        .header {
+            background: #003087;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .content {
+            padding: 50px 30px;
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 30px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #003087;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            background: #e6f0fa;
+        }
+        .card .icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .card .label {
+            display: block;
+        }
+        .footer {
+            background: #f1f1f1;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SRG Logística e Serviços</h1>
+            <p>Sistema de Gestão de Vendas e Pagamentos</p>
+        </div>
+        <div class="content">
+            <h2>Menu Principal</h2>
+            <div class="grid">
+                <a href="{% url 'dashboard' %}" class="card">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="{% url 'lista_agentes' %}" class="card">
+                    <span class="icon">👤</span>
+                    <span class="label">Agentes</span>
+                </a>
+                <a href="{% url 'lista_clientes' %}" class="card">
+                    <span class="icon">👥</span>
+                    <span class="label">Clientes</span>
+                </a>
+                <a href="{% url 'base_dados_clientes' %}" class="card">
+                    <span class="icon">📊</span>
+                    <span class="label">Base de Dados</span>
+                </a>
+                <a href="{% url 'lancar_pagamento' %}" class="card">
+                    <span class="icon">💰</span>
+                    <span class="label">Lançar Pagamento</span>
+                </a>
+                <a href="{% url 'cadastrar_agente' %}" class="card">
+                    <span class="icon">➕</span>
+                    <span class="label">Novo Agente</span>
+                </a>
+                <a href="{% url 'cadastrar_cliente' %}" class="card">
+                    <span class="icon">➕</span>
+                    <span class="label">Novo Cliente</span>
+                </a>
+
+                <a href="{% url 'admin_financeira' %}" class="card">
+                    <span class="icon">💼</span>
+                    <span class="label">SRG Administração Financeira</span>
+                </a>
+
+
+                <a href="{% url 'china_mall_dashboard' %}" class="card">
+                    <span class="icon">🏬</span>
+                    <span class="label">China Mall</span>
+                </a>
+            </div>
+        </div>
+        <div class="footer">
+            &copy; 2025 SRG Logística e Serviços - Todos os direitos reservados.
+        </div>
+    </div>
+</body>
+</html>

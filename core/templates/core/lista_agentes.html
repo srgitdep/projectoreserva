@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Agentes - SRG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #003087; color: white; }
+        .btn { background: #003087; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; }
+        .btn:hover { background: #002266; }
+        .actions a { margin-right: 10px; color: #003087; }
+        .meta-baixa { color: #28a745; }
+        .meta-alta { color: #dc3545; }
+        .menu { margin-bottom: 20px; }
+        .menu a { margin-right: 15px; text-decoration: none; color: #003087; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+        <a href="{% url 'lista_agentes' %}"><i class="fas fa-users"></i> Agentes</a>
+        <a href="{% url 'lista_clientes' %}"><i class="fas fa-user-friends"></i> Clientes</a>
+        <a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="{% url 'lancar_pagamento' %}"><i class="fas fa-hand-holding-usd"></i> Lançar Pagamento</a>
+    </div>
+    <h1><i class="fas fa-users"></i> Agentes</h1>
+    <a href="{% url 'cadastrar_agente' %}" class="btn"><i class="fas fa-plus"></i> Novo Agente</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Meta Diária (MZN)</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agente in agentes %}
+            <tr>
+                <td>{{ agente.nome }}</td>
+                <td>{{ agente.telefone }}</td>
+                <td>{{ agente.meta_diaria|floatformat:2 }}</td>
+                <td>{% if agente.ativo %}<span style="color:green;">Ativo</span>{% else %}<span style="color:red;">Inativo</span>{% endif %}</td>
+                <td>
+                    <a href="#">Editar</a> |
+                    <a href="#">Ver</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Nenhum agente cadastrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

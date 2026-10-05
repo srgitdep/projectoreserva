@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes - SRG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #003087; color: white; }
+        
+        .btn { 
+            background: #003087; 
+            color: white; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            text-decoration: none; 
+            display: inline-block;
+            margin: 5px 5px 5px 0;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover { background: #002266; transform: scale(1.02); }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .btn-warning { background: #e67e22; }
+        .btn-warning:hover { background: #d35400; }
+
+        /* ===== CABEÇALHO COM SAIR ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .header h1 { margin: 0; }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .btn-sair {
+            background: rgba(255,107,107,0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255,107,107,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-sair:hover {
+            background: rgba(255,107,107,0.3);
+            color: #ff2e2e;
+            border-color: #ff2e2e;
+            transform: scale(1.02);
+        }
+
+        /* ===== CARDS DE RESUMO ===== */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .summary-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #003087;
+        }
+        .summary-card .number {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .summary-card .label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .summary-card.total .number { color: #003087; }
+        .summary-card.ativos .number { color: #28a745; }
+        .summary-card.quitados .number { color: #6c757d; }
+        .summary-card.valor .number { color: #d4a017; }
+
+        /* ===== MENU ===== */
+        .menu {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu a {
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+            color: #003087;
+        }
+        .menu a:hover { background: #e6f0fa; }
+
+        .status-ativo { color: green; font-weight: bold; }
+        .status-quitado { color: #6c757d; }
+        .saldo { font-weight: bold; }
+        .acoes a { margin-right: 8px; color: #003087; }
+        .acoes a:hover { color: #667eea; }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .user-info { width: 100%; justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ===== CABEÇALHO ===== -->
+    <div class="header">
+        <h1><i class="fas fa-user-friends"></i> Clientes</h1>
+        <div class="user-info">
+            <span><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sair">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== CARDS DE RESUMO ===== -->
+    <div class="summary-cards">
+        <div class="summary-card total">
+            <div class="number">{{ total_clientes }}</div>
+            <div class="label">👥 Total de Clientes</div>
+        </div>
+        <div class="summary-card ativos">
+            <div class="number">{{ total_ativos }}</div>
+            <div class="label">🟢 Clientes Ativos</div>
+        </div>
+        <div class="summary-card quitados">
+            <div class="number">{{ total_quitados }}</div>
+            <div class="label">⚪ Clientes Quitados</div>
+        </div>
+        <div class="summary-card valor">
+            <div class="number">{{ valor_total|floatformat:0 }} MZN</div>
+            <div class="label">💰 Valor Total dos Produtos</div>
+        </div>
+    </div>
+
+    
+    <!-- ===== BOTÕES ===== -->
+    <a href="{% url 'cadastrar_cliente' %}" class="btn btn-success"><i class="fas fa-plus"></i> Novo Cliente</a>
+    <a href="{% url 'lancar_pagamento' %}" class="btn btn-warning"><i class="fas fa-hand-holding-usd"></i> Lançar Pagamento</a>
+
+    <!-- ===== TABELA ===== -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Pacote</th>
+                <th>Produto</th>
+                <th>Valor Total</th>
+                <th>Saldo Devedor</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.nome }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>{{ cliente.get_pacote_display }}</td>
+                <td>{{ cliente.produto_escolhido }}</td>
+                <td>{{ cliente.valor_produto|floatformat:2 }}</td>
+                <td class="saldo">{{ cliente.saldo_devedor|floatformat:2 }}</td>
+                <td>
+                    {% if cliente.status == 'ativo' %}
+                        <span class="status-ativo">🟢 Ativo</span>
+                    {% else %}
+                        <span class="status-quitado">⚪ Quitado</span>
+                    {% endif %}
+                </td>
+                <td class="acoes">
+                    <a href="{% url 'extrato_cliente' cliente.id %}" title="Extrato"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'comprovativo_mensal_atual' cliente.id %}" title="Comprovativo Mensal"><i class="fas fa-file-invoice"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">Nenhum cliente cadastrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

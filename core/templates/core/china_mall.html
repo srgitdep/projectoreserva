@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>China Mall - SRG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .header h1 { color: #003087; }
+        .header h1 i { margin-right: 10px; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .user-info .username {
+            color: #666;
+            font-size: 14px;
+        }
+        .btn-sair {
+            background: rgba(255,107,107,0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255,107,107,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-sair:hover {
+            background: rgba(255,107,107,0.3);
+            color: #ff2e2e;
+            border-color: #ff2e2e;
+            transform: scale(1.02);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .card .label { font-size: 14px; color: #666; }
+        .card .value { font-size: 28px; font-weight: bold; margin-top: 5px; }
+        .card .value.srg { color: #d4a017; }
+        .card .value.china { color: #28a745; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #003087; color: white; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; color: white; }
+        .bg-success { background: #28a745; }
+        .bg-warning { background: #ffc107; color: #333; }
+        .bg-info { background: #17a2b8; }
+        .srg-color { color: #d4a017; font-weight: bold; }
+        .china-color { color: #28a745; font-weight: bold; }
+        .obs { font-size: 12px; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER COM SAIR -->
+    <div class="header">
+        <h1><i class="fas fa-store"></i> Number One  - Visão Estratégica</h1>
+        <div class="user-info">
+            <span class="username"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-sair">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+        <div class="card">
+            <div class="label">Clientes Ativos</div>
+            <div class="value">{{ total_clientes }}</div>
+        </div>
+        <div class="card">
+            <div class="label">Clientes Quitados</div>
+            <div class="value">{{ total_quitados }}</div>
+        </div>
+        <div class="card">
+            <div class="label">Total Arrecadado</div>
+            <div class="value">{{ receita_total|floatformat:0 }} MZN</div>
+        </div>
+        <div class="card">
+            <div class="label">Receita Semana</div>
+            <div class="value">{{ receita_semana|floatformat:0 }} MZN</div>
+            <div style="font-size:14px; color:#666;">Meta: {{ meta_semanal|floatformat:0 }} MZN ({{ percentual_meta|floatformat:0 }}%)</div>
+        </div>
+        <div class="card">
+            <div class="label">Receita Mês</div>
+            <div class="value">{{ receita_mes|floatformat:0 }} MZN</div>
+        </div>
+        <div class="card" style="border-left: 4px solid #d4a017;">
+            <div class="label">Comissão SRG (20%)</div>
+            <div class="value srg">{{ comissao_srg|floatformat:0 }} MZN</div>
+        </div>
+        <div class="card" style="border-left: 4px solid #28a745;">
+            <div class="label">Saldo Final Number One Mall (80%)</div>
+            <div class="value china">{{ saldo_china_mall|floatformat:0 }} MZN</div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <h2 style="margin-top: 30px;">Previsão de Término e Valores por Cliente</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Produto</th>
+                <th>Pacote</th>
+                <th>Valor Total</th>
+                <th>Pago</th>
+                <th>Saldo</th>
+                <th>Dep. Diário</th>
+                <th>Dias Rest.</th>
+                <th>Semanas Rest.</th>
+                <th>Meses Rest.</th>
+                <th>Comissão SRG (20%)</th>
+                <th>Saldo China Mall (80%)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in clientes_previsao %}
+            <tr>
+                <td>{{ item.cliente.nome }}</td>
+                <td>{{ item.cliente.produto_escolhido }}</td>
+                <td>{{ item.cliente.get_pacote_display }}</td>
+                <td>{{ item.cliente.valor_produto|floatformat:2 }}</td>
+                <td>{{ item.total_pago|floatformat:2 }}</td>
+                <td>{{ item.saldo|floatformat:2 }}</td>
+                <td>{{ item.deposito_diario|floatformat:2 }}</td>
+                <td>{{ item.dias_restantes }}</td>
+                <td>{{ item.semanas_restantes }}</td>
+                <td>{{ item.meses_restantes }}</td>
+                <td class="srg-color">{{ item.comissao_srg|floatformat:2 }}</td>
+                <td class="china-color">{{ item.saldo_china_mall|floatformat:2 }}</td>
+                <td>
+                    {% if item.dias_restantes <= 0 %}
+                        <span class="badge bg-success">Quitado</span>
+                    {% elif item.dias_restantes <= 7 %}
+                        <span class="badge bg-warning">Última semana</span>
+                    {% else %}
+                        <span class="badge bg-info">{{ item.dias_restantes }} dias</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="13">Nenhum cliente ativo.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="obs">
+        * Os valores em <span class="srg-color">amarelo</span> representam a comissão da SRG (20%) sobre o valor total do produto de cada cliente.<br>
+        * Os valores em <span class="china-color">verde</span> representam o saldo que será repassado à China Mall (80%).
+    </div>
+</div>
+</body>
+</html>

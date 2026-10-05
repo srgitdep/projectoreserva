@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Comprovativo Mensal - {{ cliente.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #003087; text-align: center; }
+        .info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .info p { margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #003087; color: white; }
+        .total { font-weight: bold; font-size: 16px; text-align: right; margin-top: 15px; }
+        .menu a { margin-right: 15px; text-decoration: none; color: #003087; font-weight: bold; }
+        .btn-imprimir { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .btn-imprimir:hover { background: #218838; }
+        .rodape { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Início</a>
+        <a href="{% url 'lista_clientes' %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    </div>
+    <h1><i class="fas fa-file-invoice"></i> Comprovativo Mensal</h1>
+    <h2 style="text-align:center;">{{ nome_mes }} / {{ ano }}</h2>
+    <div class="info">
+        <p><strong>Cliente:</strong> {{ cliente.nome }}</p>
+        <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+        <p><strong>Produto:</strong> {{ cliente.produto_escolhido }}</p>
+        <p><strong>Valor Total:</strong> {{ cliente.valor_produto|floatformat:2 }} MZN</p>
+        <p><strong>Período:</strong> {{ data_inicio|date:"d/m/Y" }} a {{ data_fim|date:"d/m/Y" }}</p>
+    </div>
+
+    <h3>Pagamentos realizados no mês</h3>
+    <table>
+        <thead>
+            <tr><th>Data</th><th>Valor</th><th>Agente</th><th>Método</th></tr>
+        </thead>
+        <tbody>
+            {% for pag in pagamentos %}
+            <tr>
+                <td>{{ pag.data_pagamento|date:"d/m/Y" }}</td>
+                <td>{{ pag.valor|floatformat:2 }}</td>
+                <td>{{ pag.agente.nome }}</td>
+                <td>{{ pag.get_metodo_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Nenhum pagamento neste mês.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="total">
+        <p><strong>Total pago no mês:</strong> {{ total_mes|floatformat:2 }} MZN</p>
+    </div>
+    <button class="btn-imprimir" onclick="window.print()"><i class="fas fa-print"></i> Imprimir / Salvar PDF</button>
+    <div class="rodape">
+        SRG Logística e Serviços - Comprovativo de Pagamento Mensal
+    </div>
+</div>
+</body>
+</html>

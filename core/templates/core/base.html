@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}SRG - Sistema{% endblock %}</title>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; background: #f4f6f9; }
+        nav {
+            background: #2c3e50;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        nav a:hover { background: rgba(255,255,255,0.1); color: #ffd700; }
+
+        /* ===== BOTÕES PARA AGENTE ===== */
+        .btn-agente {
+            display: inline-block;
+            padding: 12px 22px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.3s;
+            color: white;
+        }
+        .btn-clientes { background: #3498db; }
+        .btn-clientes:hover { background: #2980b9; transform: scale(1.05); }
+        .btn-novo { background: #2ecc71; }
+        .btn-novo:hover { background: #27ae60; transform: scale(1.05); }
+        .btn-pagamento { background: #e67e22; }
+        .btn-pagamento:hover { background: #d35400; transform: scale(1.05); }
+
+        /* ===== BOTÃO PARA FINANCEIRO ===== */
+        .btn-financeiro { background: #8e44ad; }
+        .btn-financeiro:hover { background: #732d91; transform: scale(1.05); }
+
+        .btn-sair {
+            color: #ff6b6b;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            background: rgba(255,107,107,0.1);
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-sair:hover {
+            background: rgba(255,107,107,0.3);
+            color: #ff2e2e;
+        }
+
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            min-height: 500px;
+        }
+        .user-info {
+            color: #aaa;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            nav { flex-direction: column; align-items: stretch; }
+            .nav-left, .nav-right { justify-content: center; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <!-- ADMIN -->
+                    <a href="/">🏠 Início</a>
+                    <a href="/dashboard/">📊 Dashboard</a>
+                    <a href="/agentes/">👤 Agentes</a>
+                    <a href="/base-dados-clientes/">📊 Base de Dados</a>
+                    <a href="/admin-financeira/">💼 Finanças</a>
+                    <a href="/china-mall/">🏬 China Mall</a>
+                {% elif user.groups.all.0.name == 'Financeiro' %}
+                    <!-- FINANCEIRO -->
+                    <a href="{% url 'admin_financeira' %}" class="btn-agente btn-financeiro">
+                        <i class="fas fa-coins"></i> SRG Administração Financeira
+                    </a>
+                {% elif user.groups.all.0.name == 'ChinaMall' %}
+                    <!-- CHINA MALL -->
+                    <a href="{% url 'china_mall_dashboard' %}" class="btn-agente" style="background: #00b894;">
+                        <i class="fas fa-store"></i> China Mall
+                    </a>
+                {% else %}
+                    <!-- AGENTE -->
+                    <a href="{% url 'lista_clientes' %}" class="btn-agente btn-clientes">👥 Clientes</a>
+                    <a href="{% url 'cadastrar_cliente' %}" class="btn-agente btn-novo">➕ Novo Cliente</a>
+                    <a href="{% url 'lancar_pagamento' %}" class="btn-agente btn-pagamento">💰 Lançar Pagamento</a>
+                {% endif %}
+            {% else %}
+                <span style="color: white; font-weight: bold;">🚀 SRG</span>
+            {% endif %}
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <span class="user-info"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+                <!-- LOGOUT VIA POST (SEM ERRO 405) -->
+                <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sair"><i class="fas fa-sign-out-alt"></i> Sair</button>
+                </form>
+            {% else %}
+                <a href="/login/" style="color: white; font-weight: bold;">🔐 Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

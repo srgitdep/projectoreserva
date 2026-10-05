@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard do Agente{% endblock %}
+
+{% block content %}
+<h1>👤 Dashboard de {{ agente.nome }}</h1>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+    <div style="background: #3498db; color: white; padding: 20px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3>👥 Total Clientes</h3>
+        <p style="font-size: 2em;">{{ total_clientes }}</p>
+    </div>
+    <div style="background: #2ecc71; color: white; padding: 20px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3>💰 Total Arrecadado</h3>
+        <p style="font-size: 2em;">{{ total_pago }} MT</p>
+    </div>
+    <div style="background: #e67e22; color: white; padding: 20px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3>✅ Clientes Quitados</h3>
+        <p style="font-size: 2em;">{{ total_quitados }}</p>
+    </div>
+</div>
+
+<h2 style="margin-top: 30px;">📋 Últimos Pagamentos</h2>
+<ul>
+    {% for pagamento in pagamentos_recentes %}
+        <li>{{ pagamento.cliente.nome }} - {{ pagamento.valor }} MT ({{ pagamento.data_pagamento }})</li>
+    {% empty %}
+        <li>Nenhum pagamento registado ainda.</li>
+    {% endfor %}
+</ul>
+
+<h2>🔄 Clientes Ativos</h2>
+<ul>
+    {% for cliente in clientes_ativos %}
+        <li>{{ cliente.nome }} - {{ cliente.produto_escolhido }} - Saldo: {{ cliente.saldo_devedor }} MT</li>
+    {% empty %}
+        <li>Nenhum cliente activo.</li>
+    {% endfor %}
+</ul>
+
+<p><a href="/pagamento/lancar/">💰 Lançar Novo Pagamento</a></p>
+<p><a href="/clientes/">📋 Ver todos os clientes</a></p>
+<p><a href="/logout/">🚪 Sair</a></p>
+{% endblock %}
